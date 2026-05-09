@@ -3484,10 +3484,10 @@ REACTANT_ABI void reactantXLAExec(LinkableRuntime **__restrict__ lrtP,
     }
     baseArrays[i] = argB;
     basePtrs[i] = argP;
-    auto dimsSpan = argB->on_device_shape().dimensions();
+    auto shape = argB->on_device_shape();
+    auto dimsSpan = shape.dimensions();
 
     llvm::SmallVector<int64_t, 4> dims(dimsSpan.begin(), dimsSpan.end());
-    auto shape = argB->on_device_shape();
     int64_t elemBytes =
         xla::ShapeUtil::ByteSizeOfPrimitiveType(shape.element_type());
     if (!dims.empty())
@@ -3629,6 +3629,7 @@ REACTANT_ABI void reactantXLAExec(LinkableRuntime **__restrict__ lrtP,
       llvm::errs() << " failed to run passes!\n";
       exit(1);
     }
+    module->dump();
 
     auto exec =
         ClientCompileWithProto(lrt->client, wrap(module.get()), nullptr, 0);
